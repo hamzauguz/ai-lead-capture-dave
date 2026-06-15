@@ -24,8 +24,8 @@ export default async function LeadsPage() {
             </p>
             <h1 className="text-3xl font-bold text-slate-900">Saved leads</h1>
             <p className="mt-2 text-sm text-slate-600">
-              Every submission from {CLIENT.name}&apos;s form is stored locally in{" "}
-              <code>data/leads.json</code>.
+              Every submission from {CLIENT.name}&apos;s form appears here for demo
+              review.
             </p>
           </div>
 
