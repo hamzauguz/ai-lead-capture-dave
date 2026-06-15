@@ -1,8 +1,10 @@
-import Link from "next/link";
-import { CLIENT } from "@/lib/config";
-import { getLeads } from "@/lib/local-db";
+"use client";
 
-export const dynamic = "force-dynamic";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { CLIENT } from "@/lib/config";
+import { getBrowserLeads } from "@/lib/lead-storage";
+import type { StoredLead } from "@/lib/types";
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("en-US", {
@@ -11,8 +13,14 @@ function formatDate(value: string) {
   }).format(new Date(value));
 }
 
-export default async function LeadsPage() {
-  const leads = await getLeads();
+export default function LeadsPage() {
+  const [leads, setLeads] = useState<StoredLead[]>([]);
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    setLeads(getBrowserLeads());
+    setReady(true);
+  }, []);
 
   return (
     <main className="min-h-screen bg-slate-50 px-4 py-10 sm:px-6 lg:px-8">
@@ -24,8 +32,7 @@ export default async function LeadsPage() {
             </p>
             <h1 className="text-3xl font-bold text-slate-900">Saved leads</h1>
             <p className="mt-2 text-sm text-slate-600">
-              Every submission from {CLIENT.name}&apos;s form appears here for demo
-              review.
+              Submissions from this browser appear here for demo review.
             </p>
           </div>
 
@@ -37,7 +44,11 @@ export default async function LeadsPage() {
           </Link>
         </div>
 
-        {leads.length === 0 ? (
+        {!ready ? (
+          <div className="rounded-2xl border border-slate-200 bg-white px-6 py-12 text-center text-slate-500">
+            Loading leads...
+          </div>
+        ) : leads.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-12 text-center text-slate-500">
             No leads yet. Submit the form to see entries here.
           </div>

@@ -1,12 +1,8 @@
 import { mkdir, readFile, writeFile } from "fs/promises";
 import path from "path";
-import type { LeadSubmission } from "./types";
+import type { LeadSubmission, StoredLead } from "./types";
 
-export interface StoredLead extends LeadSubmission {
-  id: string;
-  createdAt: string;
-  aiResponse: string;
-}
+export type { StoredLead } from "./types";
 
 const globalStore = globalThis as typeof globalThis & {
   __leadCaptureStore?: StoredLead[];

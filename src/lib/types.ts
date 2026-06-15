@@ -4,8 +4,15 @@ export interface LeadSubmission {
   inquiry: string;
 }
 
+export interface StoredLead extends LeadSubmission {
+  id: string;
+  createdAt: string;
+  aiResponse: string;
+}
+
 export interface LeadResponse {
   success: boolean;
   aiResponse?: string;
+  lead?: StoredLead;
   error?: string;
 }

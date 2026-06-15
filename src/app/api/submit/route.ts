@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { generatePersonalizedResponse } from "@/lib/groq";
 import { saveLead } from "@/lib/local-db";
-import type { LeadSubmission } from "@/lib/types";
+import type { LeadSubmission, StoredLead } from "@/lib/types";
 
 function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -53,9 +53,24 @@ export async function POST(request: Request) {
     };
 
     const aiResponse = await generatePersonalizedResponse(lead);
-    await saveLead(lead, aiResponse);
 
-    return NextResponse.json({ success: true, aiResponse });
+    let storedLead: StoredLead;
+
+    try {
+      storedLead = await saveLead(lead, aiResponse);
+    } catch (saveError) {
+      console.warn("Server storage unavailable, returning lead to client:", saveError);
+      storedLead = {
+        id: crypto.randomUUID(),
+        createdAt: new Date().toISOString(),
+        name: lead.name,
+        email: lead.email,
+        inquiry: lead.inquiry,
+        aiResponse,
+      };
+    }
+
+    return NextResponse.json({ success: true, aiResponse, lead: storedLead });
   } catch (error) {
     console.error("Lead submission failed:", error);
 

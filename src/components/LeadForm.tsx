@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import type { LeadResponse } from "@/lib/types";
+import { saveBrowserLead } from "@/lib/lead-storage";
 
 type FormState = "idle" | "loading" | "success" | "error";
 
@@ -33,6 +34,9 @@ export default function LeadForm() {
       }
 
       setAiResponse(data.aiResponse || "");
+      if (data.lead) {
+        saveBrowserLead(data.lead);
+      }
       setState("success");
       setName("");
       setEmail("");
@@ -119,6 +123,12 @@ export default function LeadForm() {
             Thank you! Here is your personalized response:
           </p>
           <p className="text-sm leading-6 text-emerald-900">{aiResponse}</p>
+          <a
+            href="/leads"
+            className="mt-4 inline-block text-sm font-medium text-emerald-800 underline hover:text-emerald-900"
+          >
+            View saved leads
+          </a>
         </div>
       )}
     </div>
